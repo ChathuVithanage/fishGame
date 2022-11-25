@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fish Game</title>
+    <!--    <script src="assets/js/bootstrap.min.js"></script>-->
+    <script src="assets/lib/jquery-ui.min.css"></script>
+    <style>
+        #container{
+            background: url("./assets/background-sheet0.png");
+            background-size: contain;
+            width: 90%;
+            height: 650px;
+            position: relative;
+            display: flex;
+            /border-color: maroon;/
+            border: 5px solid maroon;
+            margin-left: 4%;
+        }
+        #fish{
+            width: 30px;
+            position: relative;
+            background-size: contain;
+            background-repeat: no-repeat;
+            top: 40%;
+            left: 15%;
+            transform: scaleX(-1);
+        }
+
+        #shark{
+            width: 30px;
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+            top: 40%;
+            right: 20%;
+        }
+
+        /*#smallFish1,#smallFish2{*/
+        /*    width: 30px;*/
+        /*    position: absolute;*/
+        /*    background-size: contain;*/
+        /*    background-repeat: no-repeat;*/
+        /*    top: 30%;*/
+        /*    right: 18%;*/
+        /*    transform: scaleX(-1);*/
+        /*}*/
+
+        section span{
+            position: absolute;
+            bottom: -50px;
+            background: transparent;
+            border-radius: 50%;
+
+            pointer-events: none;
+            box-shadow: inset 0 0 0 5px rgba(255,255,255,0.5);
+            animation: animate 4s linear infinite;
+        }
+         span:before{
+             content: '';
+             position: absolute;
+             width: 100%;
+             height: 100%;
+             transform: scale(0.25) translate(-70%, -70%);
+             background: radial-gradient(#fff, transparent);
+             border-radius: 50%;
+         }
+        
+        @keyframes animate {
+            0%{
+                transform: translateY(0%);
+                opacity: 1;
+            }
+            99%{
+                opacity: 1;
+            }
+
+            100%{
+                transform: translateY(-1200%);
+                opacity: 1;
+            }
+        }
+
+        section small{
+            position: absolute;
+            width: 100px;
+            bottom: 100px;
+            background: transparent;
+            pointer-events: none;
+            animation: animate1 4s infinite;
+        }
+
+        small:before{
+            content: '🐠';
+            position: absolute;
+            width: 100px;
+
+        }
+
+        @keyframes animate1 {
+            0%{
+                transform: translateX(0%);
+                opacity: 1;
+            }
+            99%{
+                opacity: 1;
+            }
+
+            100%{
+                transform: translateX(-1200%);
+                opacity: 1;
+            }
+        }
+
+
+
+    </style>
+</head>
+<body>
+<section id="container">
+    <div id="fish"><img src="assets/myfish.gif" width="90px" ></div>
+    <div id="shark"><img src="assets/shark.gif" width="220px"></div>
+    <div id="smallFish1"><img src="https://i.gifer.com/R30w.gif" width="50px"></div>
+    <div id="smallFish2"><img src="https://i.gifer.com/VAyP.gif" width="50px"></div>
+
+</section>
+<script src="assets/lib/js/jquery-3.6.1.min.js"></script>
+
+<script>
+
+    var elem1=document.getElementById("fish");
+    var elem=document.getElementById("shark");
+
+    let intervalId = setInterval(function () {
+        let next = $(elem).css("right").match(/(\d+)/)[0];
+        let prevPos =  parseInt(next) + 2;
+        // let prevPos = $(elem).css("right").match(/(\d+)/)[0];
+        // let next = parseInt(prevPos) + 2;
+        $(elem).css("right", prevPos + "px");
+    }, 10);
+
+    //create water bubbles
+    function createBubble(){
+        const section = document.querySelector('section')
+        const createElement = document.createElement('span')
+
+        var size = Math.random() * 60;
+
+        createElement.style.width = 20 + size + 'px';
+        createElement.style.height = 20 + size + 'px';
+        createElement.style.left = Math.random() * innerWidth + "px";
+        section.appendChild(createElement);
+
+        setTimeout(() =>{
+            createElement.remove()
+        },4000)
+    }
+    setInterval(createBubble, 100);
+
+    //fish move to up
+    function jump(){
+        var swim=parseInt(window.getComputedStyle(elem1).getPropertyValue("top"));
+        if(swim>=14){
+            elem1.style.top=(swim-40)+"px"
+        }
+    }
+
+    document.addEventListener('keyup',event=>{
+        if(event.code==='ArrowUp'){
+            jump();
+        }
+    })
+
+    //fish move to down
+    // function down(){
+    //     var swim1=parseInt(window.getComputedStyle(elem1).getPropertyValue("bottom"));
+    //     if(swim1<=14){
+    //         elem1.style.bottom=(swim1+40)+"px"
+    //     }
+    // }
+    //
+    // document.addEventListener('keydown',event=>{
+    //     if(event.code==='ArrowDown'){
+    //         down();
+    //     }
+    // })
+
+    //small fish
+    function createSmallFish(){
+        const section = document.querySelector('section')
+        const createElement = document.createElement('small')
+
+        var size = Math.random() * 60;
+
+        createElement.style.width = 20 + size + 'px';
+        createElement.style.height = 20 + size + 'px';
+        createElement.style.left = Math.random() * innerWidth + "px";
+        section.appendChild(createElement);
+
+        setTimeout(() =>{
+            createElement.remove()
+        },4000)
+    }
+    setInterval(createSmallFish, 500);
+
+
+
+
+</script>
+</body>
