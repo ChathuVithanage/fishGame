@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <title>Fish Game</title>
     <!--    <script src="assets/js/bootstrap.min.js"></script>-->
-    <script src="assets/lib/jquery-ui.min.css"></script>
+<!--    <script src="assets/lib/jquery-ui.min.css"></script>-->
     <style>
         #container{
             background: url("./assets/background-sheet0.png");
             background-size: contain;
-            width: 90%;
+            width: 88%;
             height: 650px;
             position: relative;
             display: flex;
-            /border-color: maroon;/
-            border: 5px solid maroon;
-            margin-left: 4%;
+            margin-left: 5%;
         }
         #fish{
             width: 30px;
@@ -27,13 +25,32 @@
             transform: scaleX(-1);
         }
 
-        #shark{
-            width: 30px;
+        .shark{
+            width:220px;
             position: absolute;
             background-size: contain;
             background-repeat: no-repeat;
             top: 40%;
-            right: 20%;
+            right: 0;
+        }
+
+        .octopus{
+            width:180px;
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+            bottom: 8%;
+            right: 0;
+        }
+
+        .smallFish{
+            width:45px;
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+            top: 18%;
+            right: 0;
+            transform: scaleX(-1);
         }
 
         /*#smallFish1,#smallFish2{*/
@@ -112,6 +129,22 @@
             }
         }
 
+        #score{
+            font-family: "Permanent Marker", cursive;
+            font-size: 50px;
+        }
+
+        #restart{
+            display: none;
+        }
+        #restart-div{
+            width: 30%;
+            height: 20%;
+            background: navajowhite;
+            display: none;
+            left: 50%;
+            top: 50%;
+        }
 
 
     </style>
@@ -119,25 +152,29 @@
 <body>
 <section id="container">
     <div id="fish"><img src="assets/myfish.gif" width="90px" ></div>
-    <div id="shark"><img src="assets/shark.gif" width="220px"></div>
-    <div id="smallFish1"><img src="https://i.gifer.com/R30w.gif" width="50px"></div>
-    <div id="smallFish2"><img src="https://i.gifer.com/VAyP.gif" width="50px"></div>
+<!--    <div id="shark"><img src="assets/shark.gif" "></div>-->
+<!--    <div id="smallFish1"><img src="https://i.gifer.com/R30w.gif" width="50px"></div>-->
+<!--    <div id="smallFish2"><img src="https://i.gifer.com/VAyP.gif" width="50px"></div>-->
+    <div id="score">
+        0
+    </div>
+
+    <div id="restart-div">
+        <button id="restart">
+            Restart<br>
+            <small class="small_text">(press Enter)</small>
+        </button>
+    </div>
 
 </section>
-<script src="assets/lib/js/jquery-3.6.1.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<!--<script src="assets/lib/js/jquery-3.6.1.min.js"></script>-->
 
 <script>
 
     var elem1=document.getElementById("fish");
-    var elem=document.getElementById("shark");
 
-    let intervalId = setInterval(function () {
-        let next = $(elem).css("right").match(/(\d+)/)[0];
-        let prevPos =  parseInt(next) + 2;
-        // let prevPos = $(elem).css("right").match(/(\d+)/)[0];
-        // let next = parseInt(prevPos) + 2;
-        $(elem).css("right", prevPos + "px");
-    }, 10);
 
     //create water bubbles
     function createBubble(){
@@ -171,6 +208,7 @@
         }
     })
 
+
     //fish move to down
     // function down(){
     //     var swim1=parseInt(window.getComputedStyle(elem1).getPropertyValue("bottom"));
@@ -194,16 +232,226 @@
 
         createElement.style.width = 20 + size + 'px';
         createElement.style.height = 20 + size + 'px';
-        createElement.style.left = Math.random() * innerWidth + "px";
+        createElement.style.right = Math.random() * innerHeight + "px";
         section.appendChild(createElement);
 
         setTimeout(() =>{
             createElement.remove()
-        },4000)
+        },2000)
     }
     setInterval(createSmallFish, 500);
 
+    createSharkRepeatedly();
+    createOctopusRepeatedly();
+    createSmallFishRepeatedly();
 
+    let sharkId = 0;
+    let octopusId =0;
+    let smallFishId=0;
+
+    var terminateAll = false;
+
+    //shark repeated
+    function createSharkRepeatedly() {
+        if (terminateAll) {
+            return;
+        }
+        //  random num between 500 - 1000
+        let randomSeq = Math.floor(Math.random() * 800) + 4000;
+        setTimeout(() => {
+            // first append the slime
+            let img = $("<img>", {
+                class : "shark",
+                id: "S"+sharkId,
+                src: "./assets/shark.gif",
+            });
+
+            $("#container").append(img);
+
+            // animate
+            let intervalId = setInterval(function () {
+                let next = $(elem).css("right").match(/(\d+)/)[0];
+                let prevPos =  parseInt(next) + 2;
+                $(elem).css("right", prevPos + "px");
+            }, 10);
+            let elem = document.getElementById("S"+sharkId);
+            $(elem).onPositionChanged(function () {
+                checkForTheCollision(elem, intervalId);
+            });
+
+            //  set the stopper
+            setTimeout(function () {
+                clearInterval(intervalId);
+                $(elem).remove();
+            }, 5600);
+
+            // next shark
+            setTimeout(() => {
+                sharkId++;
+                createSharkRepeatedly();
+            }, 100);
+        }, randomSeq);
+    }
+
+    //octopus repeated
+    function createOctopusRepeatedly() {
+        if (terminateAll) {
+            return;
+        }
+
+        let randomSeq = Math.floor(Math.random() * 1000) + 8000;
+        setTimeout(() => {
+            // first append the slime
+            let img = $("<img>", {
+                class : "octopus",
+                id: "S1"+octopusId,
+                src: "./assets/the-blobs-live-on-octopus.gif",
+            });
+
+            $("#container").append(img);
+
+            //  then animate
+            let intervalId = setInterval(function () {
+                let next1 = $(elemOct).css("right").match(/(\d+)/)[0];
+                let prevPos1 =  parseInt(next1) + 2;
+                $(elemOct).css("right", prevPos1 + "px");
+            }, 10);
+            let elemOct = document.getElementById("S1"+octopusId);
+            $(elemOct).onPositionChanged(function () {
+                checkForTheCollision(elemOct, intervalId);
+            });
+
+            setTimeout(function () {
+                clearInterval(intervalId);
+                $(elemOct).remove();
+            }, 5600);
+
+            setTimeout(() => {
+                octopusId++;
+                createOctopusRepeatedly();
+            }, 100);
+        }, randomSeq);
+    }
+
+    //small fish repeated
+    function createSmallFishRepeatedly() {
+        if (terminateAll) {
+            return;
+        }
+
+        let randomSeq = Math.floor(Math.random() * 1000) + 6000;
+        setTimeout(() => {
+            // first append the slime
+            let img = $("<img>", {
+                class : "smallFish",
+                id: "S2"+smallFishId,
+                src: "https://i.gifer.com/VAyP.gif",
+            });
+
+            $("#container").append(img);
+
+            //  then animate
+            let intervalId = setInterval(function () {
+                let next2 = $(elemSM).css("right").match(/(\d+)/)[0];
+                let prevPos2 =  parseInt(next2) + 2;
+                $(elemSM).css("right", prevPos2 + "px");
+            }, 10);
+            let elemSM = document.getElementById("S2"+octopusId);
+
+
+            setTimeout(function () {
+                clearInterval(intervalId);
+                $(elemSM).remove();
+            }, 5600);
+
+            setTimeout(() => {
+                smallFishId++;
+                createSmallFishRepeatedly();
+            }, 100);
+        }, randomSeq);
+    }
+
+
+    // score functionality
+
+    //const score = document.getElementById('score');
+
+    jQuery.fn.onPositionChanged = function (trigger, millis) {
+        if (millis == null) millis = 100;
+        var o = $(this[0]); // our jquery object
+        if (o.length < 1) return o;
+
+        var lastPos = null;
+        var lastOff = null;
+        setInterval(function () {
+            if (o == null || o.length < 1) return o;
+            if (lastPos == null) lastPos = o.position();
+            if (lastOff == null) lastOff = o.offset();
+            var newPos = o.position();
+            var newOff = o.offset();
+            if (lastPos.top != newPos.top || lastPos.left != newPos.left) {
+                $(this).trigger("onPositionChanged", {
+                    lastPos: lastPos,
+                    newPos: newPos,
+                });
+                if (typeof trigger == "function") trigger(lastPos, newPos);
+                lastPos = o.position();
+            }
+            if (lastOff.top != newOff.top || lastOff.left != newOff.left) {
+                $(this).trigger("onOffsetChanged", { lastOff: lastOff, newOff: newOff });
+                if (typeof trigger == "function") trigger(lastOff, newOff);
+                lastOff = o.offset();
+            }
+        }, millis);
+
+        return o;
+    };
+
+    let started;
+
+    var selection = document.querySelector("#fish");
+    var rectSelection = selection.getBoundingClientRect();
+    function checkForTheCollision(elem, id) {
+        let rect = elem.getBoundingClientRect();
+        if (
+            rect.bottom > rectSelection.top &&
+            rect.right > rectSelection.left &&
+            rect.top < rectSelection.bottom &&
+            rect.left < rectSelection.right
+        ) {
+            terminateAll = true;
+            started = false;
+            //stopTimer();
+            // resetScore();
+            console.log("aww i hit something!");
+
+        } else {
+
+            if (terminateAll) clearInterval(id);
+        }
+    }
+    //
+    // var restart_div = $("#restart-div");
+    // var restart_btn = $("#restart");
+    // var score = $("#score");
+    //var game_over = false;
+    //
+    // function game_over() {
+    //     clearInterval("#container");
+    //
+    //     var game_over = false;
+    //     document.getElementById("restart-div");
+    //     if (game_over.style.display === "none"){
+    //         game_over.style.display = "block";
+    //     }else{
+    //         game_over.style.display = "none";
+    //     }
+    //
+    // }
+    //
+    // restart_btn.click(function() {
+    //     location.reload();
+    // });
 
 
 </script>
