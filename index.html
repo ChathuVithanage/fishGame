@@ -16,13 +16,13 @@
             margin-left: 5%;
         }
         #fish{
-            width: 30px;
             position: relative;
-            background-size: contain;
-            background-repeat: no-repeat;
-            top: 40%;
+            background-size: cover;
+            width: 90px;
+            height: 78px;
             left: 15%;
             transform: scaleX(-1);
+            background-image : url("https://i.ibb.co/GQ7BkYm/image.gif");
         }
 
         .shark{
@@ -134,24 +134,24 @@
             font-size: 50px;
         }
 
-        #restart{
-            display: none;
-        }
-        #restart-div{
-            width: 30%;
-            height: 20%;
-            background: navajowhite;
-            display: none;
-            left: 50%;
-            top: 50%;
-        }
+        /*#restart{*/
+        /*    display: none;*/
+        /*}*/
+        /*#restart-div{*/
+        /*    width: 30%;*/
+        /*    height: 20%;*/
+        /*    background: navajowhite;*/
+        /*    display: none;*/
+        /*    left: 50%;*/
+        /*    top: 50%;*/
+        /*}*/
 
 
     </style>
 </head>
 <body>
 <section id="container">
-    <div id="fish"><img src="assets/myfish.gif" width="90px" ></div>
+    <div id="fish"></div>
 <!--    <div id="shark"><img src="assets/shark.gif" "></div>-->
 <!--    <div id="smallFish1"><img src="https://i.gifer.com/R30w.gif" width="50px"></div>-->
 <!--    <div id="smallFish2"><img src="https://i.gifer.com/VAyP.gif" width="50px"></div>-->
@@ -159,12 +159,12 @@
         0
     </div>
 
-    <div id="restart-div">
-        <button id="restart">
-            Restart<br>
-            <small class="small_text">(press Enter)</small>
-        </button>
-    </div>
+<!--    <div id="restart-div">-->
+<!--        <button id="restart">-->
+<!--            Restart<br>-->
+<!--            <small class="small_text">(press Enter)</small>-->
+<!--        </button>-->
+<!--    </div>-->
 
 </section>
 
@@ -200,6 +200,7 @@
         if(swim>=14){
             elem1.style.top=(swim-40)+"px"
         }
+        rectSelection = selection.getBoundingClientRect();
     }
 
     document.addEventListener('keyup',event=>{
@@ -317,9 +318,7 @@
                 $(elemOct).css("right", prevPos1 + "px");
             }, 10);
             let elemOct = document.getElementById("S1"+octopusId);
-            $(elemOct).onPositionChanged(function () {
-                checkForTheCollision(elemOct, intervalId);
-            });
+
 
             setTimeout(function () {
                 clearInterval(intervalId);
@@ -356,8 +355,11 @@
                 let prevPos2 =  parseInt(next2) + 2;
                 $(elemSM).css("right", prevPos2 + "px");
             }, 10);
-            let elemSM = document.getElementById("S2"+octopusId);
+            let elemSM = document.getElementById("S2"+smallFishId);
 
+            $(elemSM).onPositionChanged(function () {
+                checkForTheCollision1(elemSM, intervalId);
+            });
 
             setTimeout(function () {
                 clearInterval(intervalId);
@@ -424,34 +426,67 @@
             //stopTimer();
             // resetScore();
             console.log("aww i hit something!");
+            $("#fish").css('background','url("https://i.ibb.co/LtsyC5k/boom-explosion.gif" )')
+
+            setTimeout(() =>window.location.reload(), 500 ) ;
+
+            // alert("You Lost! your score is:"+ score);
+                elem1.style.top=100+"px";
+
 
         } else {
 
             if (terminateAll) clearInterval(id);
         }
     }
-    //
-    // var restart_div = $("#restart-div");
-    // var restart_btn = $("#restart");
-    // var score = $("#score");
-    //var game_over = false;
-    //
-    // function game_over() {
-    //     clearInterval("#container");
-    //
-    //     var game_over = false;
-    //     document.getElementById("restart-div");
-    //     if (game_over.style.display === "none"){
-    //         game_over.style.display = "block";
-    //     }else{
-    //         game_over.style.display = "none";
-    //     }
-    //
-    // }
-    //
-    // restart_btn.click(function() {
-    //     location.reload();
+
+    //gravity functionality
+    setInterval(()=> {
+        var x = parseInt(window.getComputedStyle(elem1).getPropertyValue("top"));
+        if (x <= 510) {
+            elem1.style.top = (x+3) + "px";
+        }
+        rectSelection = selection.getBoundingClientRect();
+        // else {
+        //     alert("You Lost! your score is:"+ score);
+        //     elem1.style.top=100+"px";
+        //     window.location.reload();
+        // }
+    },30);
+
+    //score
+    var score=0;
+    // setInterval(()=> {
+    //         score++;
+    //     document.getElementById("score").innerHTML = score;
+    //     // },500);
     // });
+
+
+
+
+    var rectSelection = selection.getBoundingClientRect();
+    function checkForTheCollision1(elemSM, id) {
+        let rect1 = elemSM.getBoundingClientRect();
+        if (
+            rect1.bottom > rectSelection.top &&
+            rect1.right > rectSelection.left &&
+            rect1.top < rectSelection.bottom &&
+            rect1.left < rectSelection.right
+        ) {
+
+            score++;
+            document.getElementById("score").innerHTML = score;
+
+
+        }else {
+
+            if (terminateAll) clearInterval(id);
+        }
+    }
+
+
+
 
 
 </script>
