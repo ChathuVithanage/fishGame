@@ -6,6 +6,9 @@
     <!--    <script src="assets/js/bootstrap.min.js"></script>-->
 <!--    <script src="assets/lib/jquery-ui.min.css"></script>-->
     <style>
+        body{
+            overflow: hidden;
+        }
         #container{
             background: url("./assets/background-sheet0.png");
             background-size: contain;
@@ -14,6 +17,7 @@
             position: relative;
             display: flex;
             margin-left: 5%;
+
         }
         #fish{
             position: relative;
@@ -28,9 +32,16 @@
         .shark{
             width:220px;
             position: absolute;
-            background-size: contain;
             background-repeat: no-repeat;
             top: 40%;
+            right: 0;
+        }
+
+        .shark1{
+            width:220px;
+            position: absolute;
+            background-repeat: no-repeat;
+            top: 10%;
             right: 0;
         }
 
@@ -39,7 +50,7 @@
             position: absolute;
             background-size: contain;
             background-repeat: no-repeat;
-            bottom: 8%;
+            bottom: 5%;
             right: 0;
         }
 
@@ -132,6 +143,7 @@
         #score{
             font-family: "Permanent Marker", cursive;
             font-size: 50px;
+            height: 10%;
         }
 
         /*#restart{*/
@@ -249,6 +261,7 @@
     let sharkId = 0;
     let octopusId =0;
     let smallFishId=0;
+    let shark1Id = 0;
 
     var terminateAll = false;
 
@@ -457,7 +470,7 @@
     //score
     var score=0;
     // setInterval(()=> {
-
+    //         score++;
     //     document.getElementById("score").innerHTML = score;
     //     // },500);
     // });
@@ -465,7 +478,7 @@
 
 
 
-    var rectSelection = selection.getBoundingClientRect();
+    //var rectSelection1 = selection.getBoundingClientRect();
     function checkForTheCollision1(elemSM, id) {
         let rect1 = elemSM.getBoundingClientRect();
         if (
@@ -485,6 +498,47 @@
         }
     }
 
+    //shark2 repeated
+    function createShark1Repeatedly() {
+        if (terminateAll) {
+            return;
+        }
+        //  random num between 500 - 1000
+        let randomSeq = Math.floor(Math.random() * 800) + 4000;
+        setTimeout(() => {
+            // first append the slime
+            let img = $("<img>", {
+                class : "shark1",
+                id: "S3"+shark1Id,
+                src: "./assets/shark.gif",
+            });
+
+            $("#container").append(img);
+
+            // animate
+            let intervalId = setInterval(function () {
+                let next = $(elem_shark2).css("right").match(/(\d+)/)[0];
+                let prevPos =  parseInt(next) + 2;
+                $(elem_shark2).css("right", prevPos + "px");
+            }, 10);
+            let elem_shark2 = document.getElementById("S3"+shark1Id);
+            $(elem_shark2).onPositionChanged(function () {
+                checkForTheCollision(elem_shark2, intervalId);
+            });
+
+            //  set the stopper
+            setTimeout(function () {
+                clearInterval(intervalId);
+                $(elem_shark2).remove();
+            }, 5600);
+
+            // next shark
+            setTimeout(() => {
+                shark1Id++;
+                createShark1Repeatedly();
+            }, 100);
+        }, randomSeq);
+    }
 
 
 
